@@ -1,1 +1,0 @@
-# Sprint 2 --> App de Clima/Tempo
