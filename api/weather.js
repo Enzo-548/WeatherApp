@@ -1,4 +1,8 @@
-//TODO: Trocar url pela api
+export function getWeatherURL(lat, lon, api) {
+  return `https://api.openweathermap.org/data/3.0/onecall?lat={${lat}1}&lon={${lon}}&appid={${api}}`;
+}
+//com base na lat e lon pega
+//fazer isso:
 export async function fetchWeather(url) {
   try {
     const response = await fetch(url);
@@ -7,11 +11,9 @@ export async function fetchWeather(url) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    // 2. Parse the response body as JSON
+    //Parse the response body as JSON
     const data = await response.json();
-
     return data;
-
   } catch (error) {
     console.error("Error fetching data:", error);
   }

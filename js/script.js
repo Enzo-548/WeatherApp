@@ -1,24 +1,31 @@
-import { fetchWeather } from "../api/weather.js"
-//import { fetchGeoCode } from "../api/geocode.js";
+import { fetchWeather, getWeatherURL } from "../api/weather.js";
+import { fetchGeoCode, getGeoURL } from "../api/geocode.js";
 
-const fetchPromise = fetch("https://api.openweathermap.org", {
-  method: "POST",
-  mode: "cors",
-  headers: {
-    "Content-Type": "text/xml",
-    "X-PINGOTHER": "pingpong",
-  },
-  body: "<person><name>Arun</name></person>",
+const api = "c8921f0324e3c6dcaeba72c9ad2a6466";
+let cidade, estado, pais, lat, lon;
+
+//A partir daqui reolver as funções
+
+document.addEventListener("DOMContentLoaded", () => {
+  //pegar cid, est, pais de algum input
+  setLocal();
+
+  var geoURL = getGeoURL(cidade, estado, pais, api);
+  const geoData = fetchGeoCode(geoURL);
+  lat = geoData.lat;
+  lon = geoData.long;
+
+  var weatherURL = getWeatherURL(lat, lon, api);
+  const weatherData = fetchWeather(weatherURL);
+
+  //a partir daqui dá para fazer tudo
+
 });
 
-fetchPromise.then((response) => {
-  console.log(response.status);
-});
+//caso base --> IP maquina
 
-//TODO: tirar daqui o local da resposta da api
-const data = await fetchWeather("https://api.openweathermap.org/data/3.0/onecall?lat={34.0901}&lon={-118.4065}&appid={c8921f0324e3c6dcaeba72c9ad2a6466}"); // retorna um json
-console.log("lat: " + data.coord.lat);
-console.log("lon: " + data.coord.lon);
-
-//GEOCODE --> pega lat e long atual
-//TEMPO --> Usa lat e long p/ devolver clima/tempo
+function setLocal() {
+  cidade = document.getElementById("cidade").value;
+  estado = document.getElementById("estado").value;
+  pais = document.getElementById("pais").value;
+}

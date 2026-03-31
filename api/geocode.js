@@ -1,13 +1,7 @@
-//TODO: Trocar url pela api
-
-//var url = http://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&appid={API key}
-
-let cidade, estado, pais;
-//tu recebe
-
-function getURL(){
-    return `http://api.openweathermap.org/geo/1.0/direct?q=$cidade,$estado,$pais&appid={API key}`
+export function getGeoURL(cidade, estado, pais, api){
+    return `http://api.openweathermap.org/geo/1.0/direct?q=${cidade},${estado},${pais}&appid={${api}`;
 }
+//return lat e long
 
 export async function fetchGeoCode(url) {
   try {
@@ -16,10 +10,8 @@ export async function fetchGeoCode(url) {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
-    // 2. Parse the response body as JSON
+    // Parse the response body as JSON
     const data = await response.json();
-
     return data;
 
   } catch (error) {
