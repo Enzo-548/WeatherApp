@@ -5,7 +5,7 @@ const api = "c8921f0324e3c6dcaeba72c9ad2a6466";
 let cidade, estado, pais, lat, lon;
 let dados = [];
 
-//basicamente um enum --> dados.MAIN_TEMPERATURA = 30º
+//basicamente um enum --> id.MAIN_TEMPERATURA = 30ºC
 const id = Object.freeze({
   GEO_CIDADE: 0,
   GEO_ESTADO: 1,
@@ -21,24 +21,17 @@ const id = Object.freeze({
 document.addEventListener("DOMContentLoaded", async () => {
   //pegar cid, est, pais de algum input
   //setLocal();
-  cidade = "Erechim";
-  estado = "RS";
-  pais = "BR";
 
+  //caso base --> loc atual
   const locUsuario = await getUserLocation({
     enableHighAccuracy: true,
     timeout: 10000,
   });
-
   lat = locUsuario.latitude;
   lon = locUsuario.longitude;
 
-  //func ao selecionar uma cidade especifica------
-  //var geoURL = await getGeoURL(cidade, estado, pais, api);
-  //const geoData = await fetchGeoCode(geoURL);
-  //lat = geoData[0].lat;
-  //lon = geoData[0].lon;
-  //---------------------------------------------
+  //Caso usuario selecione cidade, pais e estado
+  //document.getElementById(input).setLoc(cidade, estado, pais, api);
 
   var weatherURL = await getWeatherURL(lat, lon, api);
   const weatherData = await fetchWeather(weatherURL);
@@ -48,9 +41,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const proximos = lista.slice(0, 5);
 
   proximos.forEach((item, index) => {
-    console.log(`#${index} - ${item.dt_txt} | ${item.main.temp}°C`);
+    console.log(`id:${index} - ${item.dt_txt} | ${item.main.temp}°C`);
   });
-  
+
   const atual = lista[0];
 
   console.log("Descrição Tempo:\t" + atual.weather[0].description);
@@ -67,11 +60,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   //dados[]
 });
 
-//caso base --> IP maquina
-function setLocal() {
-  cidade = document.getElementById("cidade").value;
-  estado = document.getElementById("estado").value;
-  pais = document.getElementById("pais").value;
+function setLoc(cidade, estado, pais, api) {
+  const geoData = fetchGeoCode(cidade, estado, pais, api);
+  lat = geoData[0].lat;
+  lon = geoData[0].lon;
 }
 
 //Função para pedir localização --> retorna Promise
