@@ -1,5 +1,5 @@
 export function getWeatherURL(lat, lon, api) {
-  return `https://api.openweathermap.org/data/2.5/weather?lat=${lat}1&lon=${lon}&appid=${api}`;
+  return `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${api}&lang=pt_br`;
 }
 //com base na lat e lon pega
 //fazer isso:

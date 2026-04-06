@@ -4,9 +4,10 @@ import { fetchGeoCode, getGeoURL } from "../api/geocode.js";
 const api = "c8921f0324e3c6dcaeba72c9ad2a6466";
 let cidade, estado, pais, lat, lon;
 const kelvin = 273.15;
+let dados = [];
 
 //basicamente um enum --> dados.MAIN_TEMPERATURA = 30º
-const dados = Object.freeze({
+const id = Object.freeze({
   GEO_CIDADE: 0,
   GEO_ESTADO: 1,
   GEO_PAIS: 2,
@@ -40,34 +41,41 @@ document.addEventListener("DOMContentLoaded", async () => {
     timeout: 10000,
   });
 
-  console.log(
-    "Latitude\t\tLogitude\n" +
-      locUsuario.latitude +
-      "\t\t" +
-      locUsuario.longitude,
-  );
+  lat = locUsuario.latitude;
+  lon = locUsuario.longitude;
 
   //func ao selecionar uma cidade especifica------
-  var geoURL = await getGeoURL(cidade, estado, pais, api);
-  const geoData = await fetchGeoCode(geoURL);
-  lat = geoData[0].lat;
-  lon = geoData[0].lon;
+  //var geoURL = await getGeoURL(cidade, estado, pais, api);
+  //const geoData = await fetchGeoCode(geoURL);
+  //lat = geoData[0].lat;
+  //lon = geoData[0].lon;
   //---------------------------------------------
 
   var weatherURL = await getWeatherURL(lat, lon, api);
   const weatherData = await fetchWeather(weatherURL);
 
   //descricao/main --> sol chuva etc ou ensolarado, chuva leve
-  console.log("Descrição Tempo: " + weatherData.weather[0].description);
+  console.log("Descrição Tempo:\t" + weatherData.weather[0].description);
+  //dados[id.GEO_CIDADE] = geoData[0].name;
+  //dados[id.GEO_ESTADO] = geoData[0].state;
+  //dados[id.GEO_PAIS] = geoData[0].pais;
+  //dados[id.COORD_LATITUDE] = geoData[0].lat;
+  //dados[id.COORD_LONGITUDE] = geoData[0].lon;
+  dados[id.TEMPO_TIPO] = weatherData.weather[0].main;
+  dados[id.TEMPO_DESCRICAO] = weatherData.weather[0].description;
+  dados[id.TEMPO_ICONE] = weatherData.weather[0].icon;
+  dados[id.MAIN_TEMPERATURA] = weatherData.main.temp - kelvin;
+
+  //dados[]
 
   //reconstrucao basica com logs do sistema!!!
-  console.log("Cidade: " + geoData[0].name + ", " + geoData[0].state);
-  console.log("Temperatura:\t" + (weatherData.main.temp - kelvin));
-  console.log("Sensação:\t" + (weatherData.main.feels_like - kelvin));
-
-  console.log("Vento:\t\t" + weatherData.wind.speed);
-  console.log("Umidade:\t" + weatherData.main.humidity);
-  console.log("Pressão:\t" + weatherData.main.pressure);
+  //console.log("Cidade: " + geoData[0].name + ", " + geoData[0].state);
+  console.log("Temperatura:\t\t" + (weatherData.main.temp - kelvin));
+  console.log("Sensação:\t\t" + (weatherData.main.feels_like - kelvin));
+  console.log("Icone: " + weatherData.weather[0].icon)
+  console.log("Vento:\t\t\t" + weatherData.wind.speed);
+  console.log("Umidade:\t\t" + weatherData.main.humidity);
+  console.log("Pressão:\t\t" + weatherData.main.pressure);
 });
 
 //caso base --> IP maquina
