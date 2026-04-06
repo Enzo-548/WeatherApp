@@ -5,8 +5,6 @@ const api = "c8921f0324e3c6dcaeba72c9ad2a6466";
 let cidade, estado, pais, lat, lon;
 const kelvin = 273.15;
 
-//A partir daqui reolver as funções
-
 document.addEventListener("DOMContentLoaded", async () => {
   //pegar cid, est, pais de algum input
   //setLocal();
@@ -14,16 +12,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   estado = "RS";
   pais = "BR";
 
-  const userLocation = await getUserLocation({
+  const locUsuario = await getUserLocation({
     enableHighAccuracy: true,
     timeout: 10000,
   });
 
   console.log(
     "Latitude\t\tLogitude\n" +
-      userLocation.latitude +
+      locUsuario.latitude +
       "\t\t" +
-      userLocation.longitude,
+      locUsuario.longitude,
   );
 
   var geoURL = await getGeoURL(cidade, estado, pais, api);
@@ -34,12 +32,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   var weatherURL = await getWeatherURL(lat, lon, api);
   const weatherData = await fetchWeather(weatherURL);
 
-  //a partir daqui dá para fazer tudo
+  //descricao/main --> sol chuva etc ou ensolarado, chuva leve
+  console.log("Descrição Tempo: " + weatherData.weather[0].description);
+
+  //reconstrucao basica com logs do sistema!!!
+  console.log("Cidade: " + geoData[0].name + ", " + geoData[0].state);
   console.log("Temperatura:\t" + (weatherData.main.temp - kelvin));
+  console.log("Sensação:\t" + (weatherData.main.feels_like - kelvin));
+
   console.log("Vento:\t\t" + weatherData.wind.speed);
   console.log("Umidade:\t" + weatherData.main.humidity);
-  console.log("Sensação:\t" + (weatherData.main.feels_like - kelvin));
   console.log("Pressão:\t" + weatherData.main.pressure);
+
 });
 
 //caso base --> IP maquina
@@ -49,7 +53,7 @@ function setLocal() {
   pais = document.getElementById("pais").value;
 }
 
-// --- Função para pedir localização (retorna uma Promise) ---
+//Função para pedir localização --> retorna Promise
 function getUserLocation(options = {}) {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
@@ -62,21 +66,37 @@ function getUserLocation(options = {}) {
         resolve({ latitude, longitude });
       },
       (error) => {
-        let errorMessage = "Erro desconhecido ao acessar localização.";
+        let msgErro = "Erro desconhecido ao acessar localização.";
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            errorMessage = "Permissão negada para acessar a localização.";
+            msgErro = "Permissão negada para acessar a localização.";
             break;
           case error.POSITION_UNAVAILABLE:
-            errorMessage = "Localização indisponível.";
+            msgErro = "Localização indisponível.";
             break;
           case error.TIMEOUT:
-            errorMessage = "Tempo de requisição de localização esgotado.";
+            msgErro = "Tempo de requisição de localização esgotado.";
             break;
         }
-        reject(new Error(errorMessage));
+        reject(new Error(msgErro));
       },
       options,
     );
   });
 }
+
+/*
+Localização ex: Erechim, RS
+Temperatura atual
+Sol/Chuva/Nublado/etc
+
+Sensação
+Horas e Clima da hr -> [atual, prox1, prox2, prox3, prox4]
+Vento km/h
+Umidade %
+Sensação ºC
+Pressão hPa
+
+
+
+*/
