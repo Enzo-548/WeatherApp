@@ -5,7 +5,7 @@ const api = "c8921f0324e3c6dcaeba72c9ad2a6466";
 let cidade, estado, pais, lat, lon;
 const kelvin = 273.15;
 
-//basicamente um enum
+//basicamente um enum --> dados.MAIN_TEMPERATURA = 30º
 const dados = Object.freeze({
   GEO_CIDADE: 0,
   GEO_ESTADO: 1,
@@ -47,10 +47,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       locUsuario.longitude,
   );
 
+  //func ao selecionar uma cidade especifica------
   var geoURL = await getGeoURL(cidade, estado, pais, api);
   const geoData = await fetchGeoCode(geoURL);
   lat = geoData[0].lat;
   lon = geoData[0].lon;
+  //---------------------------------------------
 
   var weatherURL = await getWeatherURL(lat, lon, api);
   const weatherData = await fetchWeather(weatherURL);
