@@ -4,10 +4,14 @@ import { fetchGeoCode, getGeoURL } from "../api/geocode.js";
 const API_KEY = "c8921f0324e3c6dcaeba72c9ad2a6466";
 
 // DOM
-const slice1 = document.querySelector("#slice_1");
-const slice2 = document.querySelector("#slice_2");
-const slice3 = document.querySelector("#slice_3");
-const slice4 = document.querySelector("#slice_4");
+const slices = [
+  document.querySelector("#slice_1"),
+  document.querySelector("#slice_2"),
+  document.querySelector("#slice_3"),
+  document.querySelector("#slice_4"),
+];
+
+const tempAtual = document.querySelector("#tempAtual");
 
 const lblTemp = document.querySelector("#temperature");
 const lblWind = document.querySelector("#wind");
@@ -16,7 +20,8 @@ const lblPress = document.querySelector("#pressure");
 
 const txtInput = document.querySelector("#input");
 
-inputCity.addEventListener("keydown", async (e) => {
+// ENTER no input
+txtInput.addEventListener("keydown", async (e) => {
   if (e.key === "Enter") {
     await init();
   }
@@ -27,45 +32,59 @@ document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   try {
-    location = await getUserLocation();
-    console.log("location:", location);
+    const location = await getUserLocation();
+    if (!location) return;
 
     const data = await getWeatherData(location);
-    console.log("data:", data);
 
     renderWeather(data);
     renderForecast(data.list);
   } catch (error) {
     console.error("Erro:", error.message);
+    tempAtual.textContent = "Erro ao carregar clima";
   }
 }
 
-// Weather
+// WEATHER
 async function getWeatherData({ lat, lon }) {
   const url = getWeatherURL(lat, lon, API_KEY);
   return await fetchWeather(url);
 }
 
-// Location
+// LOCATION (input/GPS)
 async function getUserLocation() {
-  if (txtInput.trim() !== "") {
-    const cidade = inputCity.value.trim();
+  const value = txtInput.value.trim();
 
-    const url = getGeoURL(cidade, API_KEY);
+  if (value !== "") {
+    const partes = value.split(",").map((p) => p.trim());
+    //mapeia separando nas virgulas
+
+    const cidade = partes[0];
+    const estado = partes[1] || "";
+    const pais = partes[2] || "";
+
+    const url = getGeoURL(cidade, estado, pais, API_KEY);
     const geoData = await fetchGeoCode(url);
+
+    if (!geoData || geoData.length === 0) {
+      alert("Local não encontrado");
+      return null;
+    }
 
     return {
       lat: geoData[0].lat,
       lon: geoData[0].lon,
     };
-  } else {
-    return await getCurrentLocation({
-      enableHighAccuracy: true,
-      timeout: 10000,
-    });
   }
+
+  // fallback: GPS
+  return await getCurrentLocation({
+    enableHighAccuracy: true,
+    timeout: 10000,
+  });
 }
 
+// GEOLOCATION
 function getCurrentLocation(options = {}) {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
@@ -105,21 +124,43 @@ function getCurrentLocation(options = {}) {
 }
 
 // UI
+
 function renderWeather(data) {
   const atual = data.list[0];
 
-  lblTemp.textContent = `${Math.round(atual.main.temp)}°C`;
+  const temp = atual.main.temp;
+  const descricao = atual.weather[0].description;
+  const icon = atual.weather[0].icon;
+  const iconURL = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+
+  tempAtual.innerHTML = `
+    <div style="text-align:center;">
+      <p>${Math.round(temp)}°C || ${descricao}</p>
+      <!--<img src="${iconURL}" alt="clima">-->
+    </div>
+  `;
+
+  lblTemp.textContent = `${temp}°C`;
   lblWind.textContent = `${atual.wind.speed} km/h`;
   lblHumi.textContent = `${atual.main.humidity}%`;
   lblPress.textContent = `${atual.main.pressure} hPa`;
 }
 
 function renderForecast(list) {
-  const slices = [slice1, slice2, slice3, slice4];
-
   list.slice(0, 4).forEach((item, index) => {
-    if (slices[index]) {
-      slices[index].textContent = `${Math.round(item.main.temp)}°C`;
-    }
+    if (!slices[index]) return;
+
+    const hora = item.dt_txt.split(" ")[1].slice(0, 5);
+    const temp = Math.round(item.main.temp);
+    const icon = item.weather[0].icon;
+    const iconURL = `https://openweathermap.org/img/wn/${icon}.png`;
+
+    slices[index].innerHTML = `
+      <div style="text-align:center; font-size:12px;">
+        <p>${hora}</p>
+        <p>${temp}°C</p>
+        <img src="${iconURL}" />
+      </div>
+    `;
   });
 }
