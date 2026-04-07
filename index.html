@@ -1,32 +1,94 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sprint2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Weather UI</title>
+
     <link rel="stylesheet" href="css/style.css" />
   </head>
-  <body>
-    <script type="module" src="js/script.js"></script>
 
-    <div class = "weather_container" style="background-color: aqua; height: 500px; width: 350px;">
-      <textarea class = "locale" id="input" style="width: 250px; height: 15px;" placeholder="Porto Alegre, RS"></textarea>
-      <!--Add botão SUBMIT-->
-      <div class = "current_weather" style="height:50px; width: 200px; background-color: aquamarine;">TEMPO</div>
-      <div class = "weather_forecast" style="height: 100px; width: 300px; background-color: blue; display: flex;">
-        <div class = "forecast_slice" id="slice_1" style="background-color: blueviolet; height: 75px; width: 50px; margin: 5px;">ESSA PREVISAO</div>
-        <div class = "forecast_slice" id="slice_2" style="background-color: blueviolet; height: 75px; width: 50px; margin: 5px;">ESSA PREVISAO</div>
-        <div class = "forecast_slice" id="slice_3" style="background-color: blueviolet; height: 75px; width: 50px; margin: 5px;">ESSA PREVISAO</div>
-        <div class = "forecast_slice" id="slice_4" style="background-color: blueviolet; height: 75px; width: 50px; margin: 5px;">ESSA PREVISAO</div>
-      </div>
-      <div class="weather_cards" style="height: 100px; width: 250px; background-color: brown; display: flex;">
-        <div class="weather_card" id="temperature" style="height: 50px; width: 50px; background-color:chocolate;  margin: 5px;"> XYZ Cº</div> 
-        <div class="weather_card" id="wind" style="height: 50px; width: 50px; background-color:chocolate; margin: 5px;"> -420 km/h </div> 
-        <div class="weather_card" id="humidity" style="height: 50px; width: 50px; background-color:chocolate; margin: 5px;"> -10% </div> 
-        <div class="weather_card" id="pressure" style="height: 50px; width: 50px; background-color:chocolate; margin: 5px;"> -1hpa</div> 
-      </div>
-    </div>
-    
-    
+  <body>
+    <main class="app">
+      <section class="weather">
+
+        <!-- HEADER -->
+        <header class="weather__header">
+          <input 
+            class="weather__location-input"
+            value="Porto Alegre, RS"
+          />
+          <span class="weather__country">Brasil</span>
+        </header>
+
+        <!-- CURRENT -->
+        <section class="weather__current">
+          <img src="img/climate/day_clear.svg" alt="Clima ensolarado" />
+
+          <div class="weather__current-info">
+            <div class="weather__temperature">25°C</div>
+            <p class="weather__description">Ensolarado</p>
+            <p class="weather__description">Sem nuvens no céu</p>
+          </div>
+        </section>
+
+        <!-- FORECAST -->
+        <section class="weather__forecast">
+          <div class="card card--forecast">
+            <span class="card__label">10:00</span>
+            <img src="img/climate/day_clear.svg" class="card__icon" />
+            <span class="card__value">25°C</span>
+          </div>
+
+          <div class="card card--forecast">
+            <span class="card__label">13:00</span>
+            <img src="img/climate/day_clear.svg" class="card__icon" />
+            <span class="card__value">26°C</span>
+          </div>
+
+          <div class="card card--forecast">
+            <span class="card__label">16:00</span>
+            <img src="img/climate/day_clear.svg" class="card__icon" />
+            <span class="card__value">24°C</span>
+          </div>
+        </section>
+
+        <!-- STATS -->
+        <section class="weather__stats">
+          <div class="card card--stat">
+            <div class="card__info">
+              <span class="card__label">Vento</span>
+              <span class="card__value">14 km/h</span>
+            </div>
+            <img src="img/info/wind.svg" class="card__icon" />
+          </div>
+
+          <div class="card card--stat">
+            <div class="card__info">
+              <span class="card__label">Pressão</span>
+              <span class="card__value">1015 hPa</span>
+            </div>
+            <img src="img/info/pressure.svg" class="card__icon" />
+          </div>
+
+          <div class="card card--stat">
+            <div class="card__info">
+              <span class="card__label">Umidade</span>
+              <span class="card__value">30%</span>
+            </div>
+            <img src="img/info/humidity.svg" class="card__icon" />
+          </div>
+
+          <div class="card card--stat">
+            <div class="card__info">
+              <span class="card__label">Sensação</span>
+              <span class="card__value">20°C</span>
+            </div>
+            <img src="img/info/temperature.svg" class="card__icon" />
+          </div>
+        </section>
+
+      </section>
+    </main>
   </body>
 </html>
