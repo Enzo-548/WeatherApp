@@ -1,5 +1,5 @@
-export function getGeoURL(cidade, estado, pais, api){
-    return `http://api.openweathermap.org/geo/1.0/direct?q=${cidade},${estado},${pais}&APPID=${api}`;
+export function getGeoURL(cidade, estado, pais, api) {
+  return `https://api.openweathermap.org/geo/1.0/direct?q=${cidade},${estado},${pais}&APPID=${api}`;
 }
 //return lat e long
 

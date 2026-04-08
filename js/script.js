@@ -111,18 +111,104 @@ function getTimeGroup(hour) {
     return "dawn";
   }
 }
+const currentHour = new Date().getHours();
+const timeGroup = getTimeGroup(currentHour);
+console.log("Current hour:", currentHour);
+console.log("Time group:", timeGroup);
 
-/*
+function getWeatherGroup(description) {
+  const weatherText = description.toLowerCase();
 
-Localização ex: Erechim, RS
-Temperatura atual
-Sol/Chuva/Nublado/etc
+  if (weatherText.includes("thunderstorm")) {
+    return "storm";
+  } else if (weatherText.includes("rain") || weatherText.includes("drizzle")) {
+    return "rainy";
+  } else if (weatherText.includes("cloud")) {
+    return "cloudy";
+  } else {
+    return "sunny";
+  }
+}
 
-Sensação
-Horas e Clima da hr -> [atual, prox1, prox2, prox3, prox4]
-Vento km/h
-Umidade %
-Sensação ºC
-Pressão hPa
 
-*/
+function getVisualTimeGroup(timeGroup) {
+  if (timeGroup === "morning") {
+    return {
+      background: "#F8E8C8",
+      container: "#FFF4E3",
+      card: "#FFE0B2",
+      text: "#4E342E",
+    };
+  } else if (timeGroup === "afternoon") {
+    return {
+      background: "#4A90E2",
+      container: "#6BA8F5",
+      card: "#90CAF9",
+      text: "#FFFFFF",
+    };
+  } else if (timeGroup === "night") {
+    return {
+      background: "#1E3A5F",
+      container: "#2B4C7E",
+      card: "#3A5F99",
+      text: "#E3F2FD",
+    };
+  } else {
+    return {
+      background: "#0F172A",
+      container: "#1E293B",
+      card: "#334155",
+      text: "#E2E8F0",
+    };
+  }
+}
+
+
+function getWeatherVisualGroup(weatherGroup) {
+  if (weatherGroup === "sunny") {
+    return {
+      overlay: "#FFD54F",
+      accent: "#FFB300",
+      effect: "bright",
+    };
+  } else if (weatherGroup === "cloudy") {
+    return {
+      overlay: "#B0BEC5",
+      accent: "#90A4AE",
+      effect: "soft",
+    };
+  } else if (weatherGroup === "rainy") {
+    return {
+      overlay: "#5C6BC0",
+      accent: "#3949AB",
+      effect: "cool",
+    };
+  } else {
+    return {
+      overlay: "#7E57C2",
+      accent: "#4527A0",
+      effect: "strong",
+    };
+  }
+}
+
+
+console.log("Morning theme", getVisualTimeGroup("morning"));
+console.log("Sunny visual", getWeatherVisualGroup("sunny"));
+
+function getFinalTheme(timeTheme, weatherTheme) {
+  return {
+    background: timeTheme.background,
+    container: timeTheme.container,
+    card: timeTheme.card,
+    text: timeTheme.text,
+    overlay: weatherTheme.overlay,
+    accent: weatherTheme.accent,
+    effect: weatherTheme.effect,
+  };
+}
+
+
+
+
+

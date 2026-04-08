@@ -1,32 +1,44 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sprint2</title>
-    <link rel="stylesheet" href="css/style.css" />
-  </head>
-  <body>
-    <script type="module" src="js/script.js"></script>
 
-    <div class = "weather_container" style="background-color: aqua; height: 500px; width: 350px;">
-      <textarea class = "locale" id="input" style="width: 250px; height: 15px;" placeholder="Porto Alegre, RS"></textarea>
-      <!--Add botão SUBMIT-->
-      <div class = "current_weather" style="height:50px; width: 200px; background-color: aquamarine;">TEMPO</div>
-      <div class = "weather_forecast" style="height: 100px; width: 300px; background-color: blue; display: flex;">
-        <div class = "forecast_slice" id="slice_1" style="background-color: blueviolet; height: 75px; width: 50px; margin: 5px;">ESSA PREVISAO</div>
-        <div class = "forecast_slice" id="slice_2" style="background-color: blueviolet; height: 75px; width: 50px; margin: 5px;">ESSA PREVISAO</div>
-        <div class = "forecast_slice" id="slice_3" style="background-color: blueviolet; height: 75px; width: 50px; margin: 5px;">ESSA PREVISAO</div>
-        <div class = "forecast_slice" id="slice_4" style="background-color: blueviolet; height: 75px; width: 50px; margin: 5px;">ESSA PREVISAO</div>
-      </div>
-      <div class="weather_cards" style="height: 100px; width: 250px; background-color: brown; display: flex;">
-        <div class="weather_card" id="temperature" style="height: 50px; width: 50px; background-color:chocolate;  margin: 5px;"> XYZ Cº</div> 
-        <div class="weather_card" id="wind" style="height: 50px; width: 50px; background-color:chocolate; margin: 5px;"> -420 km/h </div> 
-        <div class="weather_card" id="humidity" style="height: 50px; width: 50px; background-color:chocolate; margin: 5px;"> -10% </div> 
-        <div class="weather_card" id="pressure" style="height: 50px; width: 50px; background-color:chocolate; margin: 5px;"> -1hpa</div> 
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sprint2</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <script type="module" src="js/script.js"></script>
+
+  <div class="weather_container" style="background-color: aqua; height: 500px; width: 350px;">
+    <input class="locale" id="input" style="width: 250px; height: 15px;" placeholder="Porto Alegre, RS"></input>
+    <!--Add botão SUBMIT-->
+    <div class="current_weather" id="tempAtual" style="height:50px; width: 200px; background-color: aquamarine;">TEMPO
     </div>
-    
-    
-  </body>
+    <div class="weather_forecast" style="height: 100px; width: 300px; background-color: blue; display: flex;">
+      <div class="forecast_slice" id="slice_1"
+        style="background-color: blueviolet; height: 75px; width: 50px; margin: 5px;">ESSA PREVISAO</div>
+      <div class="forecast_slice" id="slice_2"
+        style="background-color: blueviolet; height: 75px; width: 50px; margin: 5px;">ESSA PREVISAO</div>
+      <div class="forecast_slice" id="slice_3"
+        style="background-color: blueviolet; height: 75px; width: 50px; margin: 5px;">ESSA PREVISAO</div>
+      <div class="forecast_slice" id="slice_4"
+        style="background-color: blueviolet; height: 75px; width: 50px; margin: 5px;">ESSA PREVISAO</div>
+    </div>
+    <div class="weather_cards" style="height: 100px; width: 250px; background-color: brown; display: flex;">
+      <div class="weather_card" id="temperature"
+        style="height: 50px; width: 50px; background-color:chocolate;  margin: 5px;"> XYZ Cº</div>
+      <div class="weather_card" id="wind" style="height: 50px; width: 50px; background-color:chocolate; margin: 5px;">
+        -420 km/h </div>
+      <div class="weather_card" id="humidity"
+        style="height: 50px; width: 50px; background-color:chocolate; margin: 5px;"> -10% </div>
+      <div class="weather_card" id="pressure"
+        style="height: 50px; width: 50px; background-color:chocolate; margin: 5px;"> -1hpa</div>
+    </div>
+  </div>
+
+
+</body>
+
 </html>
