@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 :root {
   --primary: #00A2FF;
   --secondary: #76CCFE;
@@ -202,3 +203,5 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-sm);
 }
+=======
+>>>>>>> e8ec106 (Update)

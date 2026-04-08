@@ -82,6 +82,66 @@ async function getUserLocation() {
     enableHighAccuracy: true,
     timeout: 10000,
   });
+<<<<<<< HEAD
+=======
+  lat = locUsuario.latitude;
+  lon = locUsuario.longitude;
+
+  //Caso usuario selecione cidade, pais e estado
+  //document.getElementById(input).setLoc(cidade, estado, pais, api);
+
+  var weatherURL = await getWeatherURL(lat, lon, api);
+  const weatherData = await fetchWeather(weatherURL);
+  const lista = weatherData.list;
+
+  // pega o primeiro forecast (agora + 3h)
+  const proximos = lista.slice(0, 5);
+
+  proximos.forEach((item, index) => {
+    console.log(`id:${index} - ${item.dt_txt} | ${item.main.temp}°C`);
+  });
+
+  const atual = lista[0];
+
+  const currentHour = new Date().getHours();
+  const timeGroup = getTimeGroup(currentHour);
+  const timeTheme = getVisualTimeGroup(timeGroup);
+
+  const weatherDescription = atual.weather[0].description;
+  const weatherGroup = getWeatherGroup(weatherDescription);
+  const weatherTheme = getWeatherVisualGroup(weatherGroup);
+
+  const finalTheme = getFinalTheme(timeTheme, weatherTheme);
+
+  console.log("Current hour:", currentHour);
+  console.log("Time group:", timeGroup);
+  console.log("Time theme:", timeTheme);
+
+  console.log("Weather description:", weatherDescription);
+  console.log("Weather group:", weatherGroup);
+  console.log("Weather theme:", weatherTheme);
+
+  console.log("Final theme:", finalTheme);
+
+  console.log("Descrição Tempo:\t" + atual.weather[0].description);
+
+  dados[id.TEMPO_DESCRICAO] = atual.weather[0].description;
+  dados[id.MAIN_TEMPERATURA] = atual.main.temp;
+  dados[id.MAIN_SENSACAO] = atual.main.feels_like;
+
+  console.log("Temperatura:\t\t" + atual.main.temp);
+  console.log("Sensação:\t\t" + atual.main.feels_like);
+  console.log("Vento:\t\t\t" + atual.wind.speed);
+  console.log("Umidade:\t\t" + atual.main.humidity);
+  console.log("Pressão:\t\t" + atual.main.pressure);
+  //dados[]
+});
+
+function setLoc(cidade, estado, pais, api) {
+  const geoData = fetchGeoCode(cidade, estado, pais, api);
+  lat = geoData[0].lat;
+  lon = geoData[0].lon;
+>>>>>>> e8ec106 (Update)
 }
 
 // GEOLOCATION
