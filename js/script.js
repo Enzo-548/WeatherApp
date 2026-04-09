@@ -17,7 +17,6 @@ const lblHumi = document.querySelector("#humidity");
 const lblPress = document.querySelector("#pressure");
 const lblFeels = document.querySelector("#feels");
 const txtInput = document.querySelector("#txtInput");
-const txtPais  = document.querySelector("#txtPais");
 
 const weatherContainer = document.querySelector(".weather");
 const weatherCards = document.querySelectorAll(".card--stat");
@@ -41,6 +40,9 @@ async function init() {
     if (!location) return;
 
     const data = await getWeatherData(location);
+    console.log(data);
+
+    if (txtInput.value === "Cidade, EF, BR") txtInput.value = data.city.name;
 
     renderWeather(data);
     renderForecast(data.list);
@@ -62,19 +64,18 @@ async function getWeatherData({ lat, lon }) {
 // LOCATION (input / GPS)
 async function getUserLocation() {
   const loc = txtInput.value.trim();
-  const pais = txtPais.value.trim();
 
-  if (value !== "") {
-    const partes = value.split(",").map((p) => p.trim());
+  if (loc !== "" && loc !== "Cidade, EF, BR") {
+    const partes = loc.split(",").map((p) => p.trim());
 
     const cidade = partes[0];
     const estado = partes[1] || "";
-
+    const pais = partes[2] || "";
     const url = getGeoURL(cidade, estado, pais, API_KEY);
     const geoData = await fetchGeoCode(url);
 
     if (!geoData || geoData.length === 0) {
-      alert("Location not found");
+      alert("Formatação: Cidade, EF, BR");
       return null;
     }
 
@@ -83,6 +84,8 @@ async function getUserLocation() {
       lon: geoData[0].lon,
     };
   }
+
+  txtInput.value = "Cidade, EF, BR";
 
   return await getCurrentLocation({
     enableHighAccuracy: true,
@@ -288,7 +291,7 @@ function getFinalTheme(timeTheme, weatherTheme) {
 }
 
 function applyDynamicTheme(atual) {
-  const currentHour = 15;
+  const currentHour = atual;
   const timeGroup = getTimeGroup(currentHour);
   const weatherDescription = "sunny";
   const weatherGroup = getWeatherGroup(weatherDescription);
@@ -297,11 +300,11 @@ function applyDynamicTheme(atual) {
   const weatherTheme = getWeatherVisualGroup(weatherGroup);
   const finalTheme = getFinalTheme(timeTheme, weatherTheme);
 
-  console.log("Current hour:", currentHour);
-  console.log("Time group:", timeGroup);
-  console.log("Weather description:", weatherDescription);
-  console.log("Weather group:", weatherGroup);
-  console.log("Final theme:", finalTheme);
+  //console.log("Current hour:", currentHour);
+  //console.log("Time group:", timeGroup);
+  //console.log("Weather description:", weatherDescription);
+  //console.log("Weather group:", weatherGroup);
+  //console.log("Final theme:", finalTheme);
 
   document.body.style.background = `linear-gradient(135deg, ${finalTheme.background}, ${finalTheme.overlay})`;
   document.body.style.color = finalTheme.text;
