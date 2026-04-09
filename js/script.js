@@ -279,9 +279,9 @@ function getFinalTheme(timeTheme, weatherTheme) {
 }
 
 function applyDynamicTheme(atual) {
-  const currentHour = 16;
+  const currentHour = 8;
   const timeGroup = getTimeGroup(currentHour);
-  const weatherDescription = "afternoon";
+  const weatherDescription = "sunny";
   const weatherGroup = getWeatherGroup(weatherDescription);
 
   const timeTheme = getVisualTimeGroup(timeGroup);
