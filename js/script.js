@@ -209,10 +209,10 @@ function getWeatherGroup(description) {
 function getVisualTimeGroup(timeGroup) {
   if (timeGroup === "morning") {
     return {
-      background: "#F8E8C8",
-      container: "#FFF4E3",
-      card: "#FFE0B2",
-      text: "#4E342E",
+      //background: "#F8E8C8",
+      //container: "#FFF4E3",
+      //card: "#FFE0B2",
+      //text: "#4E342E",
     };
   } else if (timeGroup === "afternoon") {
     return {
