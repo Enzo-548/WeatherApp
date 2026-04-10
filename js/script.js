@@ -1,17 +1,10 @@
 import { fetchWeather, getWeatherURL } from "../api/weather.js";
 import { fetchGeoCode, getGeoURL } from "../api/geocode.js";
+import { applyDynamicTheme } from "./theme.js";
 
-const API_KEY = "SUA_API_KEY";
+const API_KEY = "c8921f0324e3c6dcaeba72c9ad2a6466";
 
-// ==========================
-// STATE
-// ==========================
-let hourlyForecast = [];
-let lastLocation = null;
-
-// ==========================
 // DOM
-// ==========================
 const slices = [
   document.querySelector("#slice_1"),
   document.querySelector("#slice_2"),
@@ -26,26 +19,20 @@ const lblPress = document.querySelector("#pressure");
 const lblFeels = document.querySelector("#feels");
 const txtInput = document.querySelector("#txtInput");
 
-// ==========================
-// EVENTS
-// ==========================
+// ENTER
 txtInput.addEventListener("keydown", async (e) => {
   if (e.key === "Enter") {
-    await init(true);
+    await init();
   }
 });
 
-document.addEventListener("DOMContentLoaded", () => init(false));
-
-// ==========================
 // INIT
-// ==========================
-async function init(force = false) {
+document.addEventListener("DOMContentLoaded", init);
+
+async function init() {
   try {
     const location = await getUserLocation();
     if (!location) return;
-
-    lastLocation = location;
 
     const data = await getWeatherData(location);
 
@@ -54,27 +41,24 @@ async function init(force = false) {
     }
 
     renderWeather(data);
+    renderForecast(data.list);
 
-    hourlyForecast = build24hForecast(data.list);
-    renderForecastSlices();
+    // tema agora vem de outro arquivo
+    applyDynamicTheme(data.list[0]);
 
   } catch (error) {
-    console.error(error);
-    tempAtual.textContent = "Erro ao carregar clima";
+    console.error("Error:", error.message);
+    tempAtual.textContent = "Error loading weather";
   }
 }
 
-// ==========================
-// API
-// ==========================
+// WEATHER
 async function getWeatherData({ lat, lon }) {
   const url = getWeatherURL(lat, lon, API_KEY);
   return await fetchWeather(url);
 }
 
-// ==========================
 // LOCATION
-// ==========================
 async function getUserLocation() {
   const loc = txtInput.value.trim();
 
@@ -89,7 +73,7 @@ async function getUserLocation() {
     const geoData = await fetchGeoCode(url);
 
     if (!geoData || geoData.length === 0) {
-      alert("Formato: Cidade, UF, BR");
+      alert("Formatação: Cidade, EF, BR");
       return null;
     }
 
@@ -99,64 +83,52 @@ async function getUserLocation() {
     };
   }
 
-  return await getCurrentLocation();
+  txtInput.value = "Cidade, EF, BR";
+
+  return await getCurrentLocation({
+    enableHighAccuracy: true,
+    timeout: 10000,
+  });
 }
 
-// ==========================
-// GEO
-// ==========================
-function getCurrentLocation() {
+// GEOLOCATION
+function getCurrentLocation(options = {}) {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      reject("Geolocation não suportado");
+      reject(new Error("Geolocation not supported."));
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
-      (pos) =>
+      (position) => {
         resolve({
-          lat: pos.coords.latitude,
-          lon: pos.coords.longitude,
-        }),
-      () => reject("Erro localização")
+          lat: position.coords.latitude,
+          lon: position.coords.longitude,
+        });
+      },
+      (error) => {
+        let msg = "Unknown error";
+
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            msg = "Permission denied";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            msg = "Location unavailable";
+            break;
+          case error.TIMEOUT:
+            msg = "Request timeout";
+            break;
+        }
+
+        reject(new Error(msg));
+      },
+      options
     );
   });
 }
 
-// ==========================
-// BUILD 24H FORECAST
-// ==========================
-function build24hForecast(list) {
-  const result = [];
-
-  for (let i = 0; i < list.length - 1; i++) {
-    const current = list[i];
-    const next = list[i + 1];
-
-    const t1 = current.main.temp;
-    const t2 = next.main.temp;
-
-    for (let h = 0; h < 3; h++) {
-      const ratio = h / 3;
-      const temp = t1 + (t2 - t1) * ratio;
-
-      const date = new Date(current.dt_txt);
-      date.setHours(date.getHours() + h);
-
-      result.push({
-        time: date,
-        temp: Math.round(temp),
-        icon: current.weather[0].icon,
-      });
-    }
-  }
-
-  return result.slice(0, 24);
-}
-
-// ==========================
-// RENDER CURRENT
-// ==========================
+// UI
 function renderWeather(data) {
   const atual = data.list[0];
 
@@ -184,50 +156,30 @@ function renderWeather(data) {
   lblFeels.textContent = `${feels}°C`;
 }
 
-// ==========================
-// RENDER FORECAST (DINÂMICO)
-// ==========================
-function renderForecastSlices() {
-  const now = new Date();
+function renderForecast(list) {
+  list.slice(0, 4).forEach((item, index) => {
+    if (!slices[index]) return;
 
-  slices.forEach((slice, i) => {
-    const future = new Date(now);
-    future.setHours(now.getHours() + i);
+    const horaStr = item.dt_txt.split(" ")[1].slice(0, 5);
+    const [h, m] = horaStr.split(":").map(Number);
 
-    const match = hourlyForecast.find(item =>
-      item.time.getHours() === future.getHours()
-    );
+    const data = new Date();
+    data.setHours(h);
+    data.setMinutes(m);
 
-    if (!match) return;
+    // ajuste fuso
+    data.setHours(data.getHours() - 3);
 
-    const hora = future.toTimeString().slice(0, 5);
-    const iconURL = `https://openweathermap.org/img/wn/${match.icon}.png`;
+    const hora = data.toTimeString().slice(0, 5);
+    const temp = Math.round(item.main.temp);
+    const icon = item.weather[0].icon;
 
-    slice.innerHTML = `
+    const iconURL = `https://openweathermap.org/img/wn/${icon}.png`;
+
+    slices[index].innerHTML = `
       <span class="card__label">${hora}</span>
-      <img src="${iconURL}" class="card__icon" alt="forecast icon" />
-      <span class="card__value">${match.temp}°C</span>
+      <img src="${iconURL}" class="card__icon" />
+      <span class="card__value">${temp}°C</span>
     `;
   });
 }
-
-// ==========================
-// INTERVALS
-// ==========================
-
-// Atualiza UI a cada 1h
-setInterval(() => {
-  renderForecastSlices();
-}, 60 * 60 * 1000);
-
-// Refetch a cada 3h (usa última localização válida)
-setInterval(async () => {
-  if (!lastLocation) return;
-
-  try {
-    const data = await getWeatherData(lastLocation);
-    hourlyForecast = build24hForecast(data.list);
-  } catch (err) {
-    console.error("Erro refetch:", err);
-  }
-}, 3 * 60 * 60 * 1000);
