@@ -35,6 +35,8 @@ async function init() {
     if (!location) return;
 
     const data = await getWeatherData(location);
+    window.__weatherList = data.list;
+    window.__location = location;
     
     if (txtInput.value === "Cidade, EF, BR") {
       txtInput.value = data.city.name;
@@ -163,9 +165,14 @@ function renderForecast(list) {
 function updateSlices(list) {
   const now = new Date();
 
+  // próxima hora cheia (16:00)
+  const base = new Date(now);
+  base.setMinutes(0, 0, 0);
+  base.setHours(base.getHours() + 1);
+
   for (let i = 0; i < 4; i++) {
-    const target = new Date(now);
-    target.setHours(now.getHours() + i + 1);
+    const target = new Date(base);
+    target.setHours(base.getHours() + i);
 
     const closest = list.reduce((prev, curr) => {
       const currDate = new Date(curr.dt_txt);
@@ -201,14 +208,49 @@ function scheduleNextHourUpdate(callback) {
     now.getMilliseconds();
 
   setTimeout(() => {
-    callback();
+    callback(); // roda exatamente na virada da hora
 
-    setInterval(callback, 60 * 60 * 1000);
+    setInterval(callback, 60 * 60 * 1000); // depois a cada 1h
   }, msUntilNextHour);
 }
 
 scheduleNextHourUpdate(() => {
   if (window.__weatherList) {
     updateSlices(window.__weatherList);
+  }
+});
+
+function scheduleWeatherRefetch(callback) {
+  const now = new Date();
+
+  const remainder = now.getHours() % 3;
+  const hoursToNextBlock = remainder === 0 ? 3 : 3 - remainder;
+
+  const next = new Date(now);
+  next.setHours(now.getHours() + hoursToNextBlock);
+  next.setMinutes(0, 0, 0);
+
+  const msUntilNext = next - now;
+
+  setTimeout(() => {
+    callback();
+
+    setInterval(callback, 3 * 60 * 60 * 1000);
+  }, msUntilNext);
+}
+
+scheduleWeatherRefetch(async () => {
+  try {
+    if (!window.__location) return;
+
+    const data = await getWeatherData(window.__location);
+    window.__weatherList = data.list;
+
+    renderWeather(data);
+    updateSlices(data.list);
+    applyDynamicTheme(data.list[0]);
+
+  } catch (err) {
+    console.error("Refetch error:", err);
   }
 });
