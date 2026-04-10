@@ -221,59 +221,69 @@ function getWeatherGroup(description) {
 function getVisualTimeGroup(timeGroup) {
   if (timeGroup === "morning") {
     return {
-      background: "#F8E8C8",
-      container: "#FFF4E3",
-      card: "#FFE0B2",
-      text: "#4E342E",
+      background: "#fdf4e3",
+      container: "rgba(255, 255, 255, 0.75)",
+      card: "rgba(255, 236, 210, 0.6)",
+      text: "#3d2c1e",
+      textSoft: "rgba(61, 44, 30, 0.6)",
+      border: "rgba(210, 170, 120, 0.3)",
     };
   } else if (timeGroup === "afternoon") {
     return {
-      background: "#4A90E2",
-      container: "#6BA8F5",
-      card: "#90CAF9",
-      text: "#FFFFFF",
+      background: "#d4e9ff",
+      container: "rgba(255, 255, 255, 0.7)",
+      card: "rgba(200, 225, 255, 0.5)",
+      text: "#1a3a5c",
+      textSoft: "rgba(26, 58, 92, 0.6)",
+      border: "rgba(100, 160, 230, 0.25)",
     };
   } else if (timeGroup === "night") {
     return {
-      background: "#1E3A5F",
-      container: "#2B4C7E",
-      card: "#3A5F99",
-      text: "#E3F2FD",
+      background: "#0f1b2d",
+      container: "rgba(255, 255, 255, 0.06)",
+      card: "rgba(255, 255, 255, 0.08)",
+      text: "#c8d8ec",
+      textSoft: "rgba(200, 216, 236, 0.5)",
+      border: "rgba(255, 255, 255, 0.08)",
     };
   } else {
     return {
-      background: "#0F172A",
-      container: "#1E293B",
-      card: "#334155",
-      text: "#E2E8F0",
+      background: "#0a0e1a",
+      container: "rgba(255, 255, 255, 0.04)",
+      card: "rgba(255, 255, 255, 0.06)",
+      text: "#a0b0c8",
+      textSoft: "rgba(160, 176, 200, 0.5)",
+      border: "rgba(255, 255, 255, 0.06)",
     };
   }
 }
 
-function getWeatherVisualGroup(weatherGroup) {
+function getWeatherVisualGroup(weatherGroup, timeGroup) {
+  const isDark = timeGroup === "night" || timeGroup === "dawn";
+
   if (weatherGroup === "sunny") {
     return {
-      overlay: "#FFD54F",
-      accent: "#FFB300",
-      effect: "bright",
+      gradient2: isDark ? "#1a1040" : "#fce4a8",
+      accent: isDark ? "rgba(255, 200, 80, 0.15)" : "rgba(255, 183, 77, 0.2)",
+      highlight: isDark ? "#f0c060" : "#e8a030",
     };
   } else if (weatherGroup === "cloudy") {
     return {
-      overlay: "#B0BEC5",
-      accent: "#90A4AE",
-      effect: "soft",
+      gradient2: isDark ? "#1a2030" : "#c8d5e0",
+      accent: isDark ? "rgba(150, 180, 210, 0.1)" : "rgba(120, 150, 180, 0.15)",
+      highlight: isDark ? "#7090b0" : "#5a7a96",
     };
   } else if (weatherGroup === "rainy") {
     return {
-      overlay: "#5C6BC0",
-      accent: "#3949AB",
-      effect: "cool",
+      gradient2: isDark ? "#0d1520" : "#a8c0d8",
+      accent: isDark ? "rgba(80, 120, 180, 0.12)" : "rgba(70, 110, 170, 0.18)",
+      highlight: isDark ? "#5080c0" : "#3a6aa0",
     };
   } else {
     return {
-      overlay: "#7E57C2",
-      accent: "#4527A0",
-      effect: "strong",
+      gradient2: isDark ? "#120818" : "#b0a0c8",
+      accent: isDark ? "rgba(100, 60, 160, 0.12)" : "rgba(90, 60, 150, 0.18)",
+      highlight: isDark ? "#8060c0" : "#5a3a90",
     };
   }
 }
@@ -281,60 +291,100 @@ function getWeatherVisualGroup(weatherGroup) {
 function getFinalTheme(timeTheme, weatherTheme) {
   return {
     background: timeTheme.background,
+    gradient2: weatherTheme.gradient2,
     container: timeTheme.container,
     card: timeTheme.card,
     text: timeTheme.text,
-    overlay: weatherTheme.overlay,
+    textSoft: timeTheme.textSoft,
+    border: timeTheme.border,
     accent: weatherTheme.accent,
-    effect: weatherTheme.effect,
+    highlight: weatherTheme.highlight,
   };
 }
 
 function applyDynamicTheme(atual) {
-  const currentHour = atual;
+  const currentHour = new Date().getHours();
+  const weatherDescription = atual.weather[0].description;
+
   const timeGroup = getTimeGroup(currentHour);
-  const weatherDescription = "sunny";
   const weatherGroup = getWeatherGroup(weatherDescription);
 
   const timeTheme = getVisualTimeGroup(timeGroup);
-  const weatherTheme = getWeatherVisualGroup(weatherGroup);
+  const weatherTheme = getWeatherVisualGroup(weatherGroup, timeGroup);
   const finalTheme = getFinalTheme(timeTheme, weatherTheme);
 
-  //console.log("Current hour:", currentHour);
-  //console.log("Time group:", timeGroup);
-  //console.log("Weather description:", weatherDescription);
-  //console.log("Weather group:", weatherGroup);
-  //console.log("Final theme:", finalTheme);
+  const isDark = timeGroup === "night" || timeGroup === "dawn";
+  const innerLight = isDark
+    ? "inset 0 1px 0 rgba(255,255,255,0.08)"
+    : "inset 0 1px 0 rgba(255,255,255,0.35)";
 
-  document.body.style.background = `linear-gradient(135deg, ${finalTheme.background}, ${finalTheme.overlay})`;
+  document.body.style.background = `linear-gradient(160deg, ${finalTheme.background}, ${finalTheme.gradient2})`;
   document.body.style.color = finalTheme.text;
+  document.body.style.transition = "background 0.6s ease";
 
   if (weatherContainer) {
     weatherContainer.style.backgroundColor = finalTheme.container;
+    weatherContainer.style.borderColor = finalTheme.border;
     weatherContainer.style.color = finalTheme.text;
-    weatherContainer.style.transition = "all 0.4s ease";
+    weatherContainer.style.backdropFilter = "blur(28px)";
+    weatherContainer.style.webkitBackdropFilter = "blur(28px)";
+    weatherContainer.style.boxShadow = `0 8px 32px rgba(0,0,0,${isDark ? "0.25" : "0.08"}), ${innerLight}`;
+    weatherContainer.style.transition = "all 0.5s ease";
   }
 
   if (currentWeather) {
     currentWeather.style.backgroundColor = finalTheme.accent;
+    currentWeather.style.borderColor = finalTheme.border;
+    currentWeather.style.borderLeft = `3px solid ${finalTheme.highlight}`;
     currentWeather.style.color = finalTheme.text;
-    currentWeather.style.transition = "all 0.4s ease";
-  }
-
-  if (forecastContainer) {
-    forecastContainer.style.backgroundColor = "transparent";
-    forecastContainer.style.transition = "all 0.4s ease";
+    currentWeather.style.backdropFilter = "blur(20px)";
+    currentWeather.style.webkitBackdropFilter = "blur(20px)";
+    currentWeather.style.boxShadow = `0 4px 16px rgba(0,0,0,${isDark ? "0.2" : "0.06"}), ${innerLight}`;
+    currentWeather.style.transition = "all 0.5s ease";
   }
 
   forecastSlices.forEach((slice) => {
     slice.style.backgroundColor = finalTheme.card;
+    slice.style.borderColor = finalTheme.border;
     slice.style.color = finalTheme.text;
-    slice.style.transition = "all 0.4s ease";
+    slice.style.backdropFilter = "blur(20px)";
+    slice.style.webkitBackdropFilter = "blur(20px)";
+    slice.style.boxShadow = `0 2px 8px rgba(0,0,0,${isDark ? "0.15" : "0.04"}), ${innerLight}`;
+    slice.style.transition = "all 0.5s ease";
   });
 
   weatherCards.forEach((card) => {
     card.style.backgroundColor = finalTheme.card;
+    card.style.borderColor = finalTheme.border;
     card.style.color = finalTheme.text;
-    card.style.transition = "all 0.4s ease";
+    card.style.backdropFilter = "blur(20px)";
+    card.style.webkitBackdropFilter = "blur(20px)";
+    card.style.boxShadow = `0 2px 8px rgba(0,0,0,${isDark ? "0.15" : "0.04"}), ${innerLight}`;
+    card.style.transition = "all 0.5s ease";
   });
+
+  document.querySelectorAll(".card__label").forEach((label) => {
+    label.style.color = finalTheme.textSoft;
+  });
+
+  document.querySelectorAll(".card__value").forEach((value) => {
+    value.style.color = finalTheme.text;
+  });
+
+  document.querySelectorAll("img").forEach((img) => {
+    img.style.filter = isDark
+      ? "drop-shadow(0 0 4px rgba(255,255,255,0.3))"
+      : "drop-shadow(0 1px 2px rgba(0,0,0,0.3)) contrast(1.2)";
+  });
+
+  const input = document.querySelector(".weather__location-input");
+  if (input) input.style.color = finalTheme.text;
+
+  const country = document.querySelector(".weather__country");
+  if (country) country.style.color = finalTheme.textSoft;
+
+  const description = document.querySelector(".weather__description");
+  if (description) description.style.color = finalTheme.textSoft;
+
+  document.body.classList.add("theme-ready");
 }
