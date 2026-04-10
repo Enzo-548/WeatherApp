@@ -190,7 +190,9 @@ body::before {
 .weather__forecast {
   display: flex;
   gap: var(--spacing-sm);
-  overflow-x: auto;
+  overflow-x: visible;
+  overflow-y: hidden;
+  justify-content: center;
   scroll-snap-type: x mandatory;
   margin: var(--spacing-lg) 0;
 }

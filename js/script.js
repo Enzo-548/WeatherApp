@@ -16,7 +16,7 @@ const lblWind = document.querySelector("#wind");
 const lblHumi = document.querySelector("#humidity");
 const lblPress = document.querySelector("#pressure");
 const lblFeels = document.querySelector("#feels");
-const txtInput = document.querySelector("#input");
+const txtInput = document.querySelector("#txtInput");
 
 const weatherContainer = document.querySelector(".weather");
 const weatherCards = document.querySelectorAll(".card--stat");
@@ -40,6 +40,9 @@ async function init() {
     if (!location) return;
 
     const data = await getWeatherData(location);
+    console.log(data);
+
+    if (txtInput.value === "Cidade, EF, BR") txtInput.value = data.city.name;
 
     renderWeather(data);
     renderForecast(data.list);
@@ -60,20 +63,19 @@ async function getWeatherData({ lat, lon }) {
 
 // LOCATION (input / GPS)
 async function getUserLocation() {
-  const value = txtInput.value.trim();
+  const loc = txtInput.value.trim();
 
-  if (value !== "") {
-    const partes = value.split(",").map((p) => p.trim());
+  if (loc !== "" && loc !== "Cidade, EF, BR") {
+    const partes = loc.split(",").map((p) => p.trim());
 
     const cidade = partes[0];
     const estado = partes[1] || "";
     const pais = partes[2] || "";
-
     const url = getGeoURL(cidade, estado, pais, API_KEY);
     const geoData = await fetchGeoCode(url);
 
     if (!geoData || geoData.length === 0) {
-      alert("Location not found");
+      alert("Formatação: Cidade, EF, BR");
       return null;
     }
 
@@ -82,6 +84,8 @@ async function getUserLocation() {
       lon: geoData[0].lon,
     };
   }
+
+  txtInput.value = "Cidade, EF, BR";
 
   return await getCurrentLocation({
     enableHighAccuracy: true,
@@ -135,7 +139,7 @@ function renderWeather(data) {
   const temp = Math.round(atual.main.temp);
   const descricao = atual.weather[0].description;
   const feels = Math.round(atual.main.feels_like);
-  const wind = atual.wind.speed;
+  const wind = Math.round(atual.wind.speed * 3.6);
   const humidity = atual.main.humidity;
   const pressure = atual.main.pressure;
   const icon = atual.weather[0].icon;
@@ -160,7 +164,18 @@ function renderForecast(list) {
   list.slice(0, 4).forEach((item, index) => {
     if (!slices[index]) return;
 
-    const hora = item.dt_txt.split(" ")[1].slice(0, 5);
+    const horaStr = item.dt_txt.split(" ")[1].slice(0, 5);
+
+    const [h, m] = horaStr.split(":").map(Number);
+
+    const data = new Date();
+    data.setHours(h);
+    data.setMinutes(m);
+
+    // subtrai 3 horas
+    data.setHours(data.getHours() - 3);
+
+    const hora = data.toTimeString().slice(0, 5);
     const temp = Math.round(item.main.temp);
     const icon = item.weather[0].icon;
     const iconURL = `https://openweathermap.org/img/wn/${icon}.png`;
@@ -194,10 +209,7 @@ function getWeatherGroup(description) {
 
   if (weatherText.includes("thunderstorm")) {
     return "storm";
-  } else if (
-    weatherText.includes("rain") ||
-    weatherText.includes("drizzle")
-  ) {
+  } else if (weatherText.includes("rain") || weatherText.includes("drizzle")) {
     return "rainy";
   } else if (weatherText.includes("cloud")) {
     return "cloudy";
